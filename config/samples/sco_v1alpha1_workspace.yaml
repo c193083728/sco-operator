@@ -1,0 +1,12 @@
+apiVersion: sco.c193083728.github.com/v1alpha1
+kind: Workspace
+metadata:
+  labels:
+    app.kubernetes.io/name: workspace
+    app.kubernetes.io/instance: workspace-sample
+    app.kubernetes.io/part-of: sco-operator
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: sco-operator
+  name: workspace-sample
+spec:
+  # TODO(user): Add fields here
