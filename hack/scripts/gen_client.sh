@@ -13,31 +13,31 @@ mkdir -p "${PROJECT_ROOT}/pkg/client/sco"
 "${PROJECT_ROOT}"/bin/applyconfiguration-gen \
   --go-header-file="${PROJECT_ROOT}/hack/boilerplate.go.txt" \
   --output-base="${TMP_DIR}/client" \
-  --input-dirs=github.com/c193083728/sco-operator/api/sco/v1alpha1 \
-  --output-package=github.com/c193083728/sco-operator/pkg/client/sco/applyconfiguration
+  --input-dirs=github.com/sco1237896/sco-operator/api/sco/v1alpha1 \
+  --output-package=github.com/sco1237896/sco-operator/pkg/client/sco/applyconfiguration
 
 "${PROJECT_ROOT}"/bin/client-gen \
   --go-header-file="${PROJECT_ROOT}/hack/boilerplate.go.txt" \
   --output-base="${TMP_DIR}/client" \
   --input=sco/v1alpha1 \
   --clientset-name "versioned"  \
-  --input-base=github.com/c193083728/sco-operator/api \
-  --apply-configuration-package=github.com/c193083728/sco-operator/pkg/client/sco/applyconfiguration \
-  --output-package=github.com/c193083728/sco-operator/pkg/client/sco/clientset
+  --input-base=github.com/sco1237896/sco-operator/api \
+  --apply-configuration-package=github.com/sco1237896/sco-operator/pkg/client/sco/applyconfiguration \
+  --output-package=github.com/sco1237896/sco-operator/pkg/client/sco/clientset
 
 "${PROJECT_ROOT}"/bin/lister-gen \
   --go-header-file="${PROJECT_ROOT}/hack/boilerplate.go.txt" \
   --output-base="${TMP_DIR}/client" \
-  --input-dirs=github.com/c193083728/sco-operator/api/sco/v1alpha1 \
-  --output-package=github.com/c193083728/sco-operator/pkg/client/sco/listers
+  --input-dirs=github.com/sco1237896/sco-operator/api/sco/v1alpha1 \
+  --output-package=github.com/sco1237896/sco-operator/pkg/client/sco/listers
 
 "${PROJECT_ROOT}"/bin/informer-gen \
   --go-header-file="${PROJECT_ROOT}/hack/boilerplate.go.txt" \
   --output-base="${TMP_DIR}/client" \
-  --input-dirs=github.com/c193083728/sco-operator/api/sco/v1alpha1 \
-  --versioned-clientset-package=github.com/c193083728/sco-operator/pkg/client/sco/clientset/versioned \
-  --listers-package=github.com/c193083728/sco-operator/pkg/client/sco/listers \
-  --output-package=github.com/c193083728/sco-operator/pkg/client/sco/informers
+  --input-dirs=github.com/sco1237896/sco-operator/api/sco/v1alpha1 \
+  --versioned-clientset-package=github.com/sco1237896/sco-operator/pkg/client/sco/clientset/versioned \
+  --listers-package=github.com/sco1237896/sco-operator/pkg/client/sco/listers \
+  --output-package=github.com/sco1237896/sco-operator/pkg/client/sco/informers
 
 
-cp -R "${TMP_DIR}"/client/github.com/c193083728/sco-operator/pkg/client/sco/* "${PROJECT_ROOT}"/pkg/client/sco
+cp -R "${TMP_DIR}"/client/github.com/sco1237896/sco-operator/pkg/client/sco/* "${PROJECT_ROOT}"/pkg/client/sco

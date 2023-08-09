@@ -18,7 +18,7 @@ limitations under the License.
 package fake
 
 import (
-	scov1alpha1 "github.com/c193083728/sco-operator/api/sco/v1alpha1"
+	scov1alpha1 "github.com/sco1237896/sco-operator/api/sco/v1alpha1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 	schema "k8s.io/apimachinery/pkg/runtime/schema"

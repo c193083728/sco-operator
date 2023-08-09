@@ -4,9 +4,9 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.12.0
-  name: workspaces.sco.c193083728.github.com
+  name: workspaces.sco.sco1237896.github.com
 spec:
-  group: sco.c193083728.github.com
+  group: sco.sco1237896.github.com
   names:
     categories:
     - integration
@@ -27,7 +27,6 @@ spec:
     name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: Workspace is the Schema for the workspaces API
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation
@@ -42,10 +41,8 @@ spec:
           metadata:
             type: object
           spec:
-            description: WorkspaceSpec defines the desired state of Workspace
             type: object
           status:
-            description: WorkspaceStatus defines the observed state of Workspace
             properties:
               conditions:
                 items:

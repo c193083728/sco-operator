@@ -16,7 +16,7 @@ limitations under the License.
 
 // Package v1alpha1 contains API Schema definitions for the sco v1alpha1 API group
 // +kubebuilder:object:generate=true
-// +groupName=sco.c193083728.github.com
+// +groupName=sco.sco1237896.github.com
 package v1alpha1
 
 import (
@@ -26,7 +26,7 @@ import (
 
 var (
 	// GroupVersion is group version used to register these objects.
-	GroupVersion = schema.GroupVersion{Group: "sco.c193083728.github.com", Version: "v1alpha1"}
+	GroupVersion = schema.GroupVersion{Group: "sco.sco1237896.github.com", Version: "v1alpha1"}
 
 	// SchemeGroupVersion is an hack for client gen.
 	SchemeGroupVersion = GroupVersion

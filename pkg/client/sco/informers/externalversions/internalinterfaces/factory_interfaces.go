@@ -20,7 +20,7 @@ package internalinterfaces
 import (
 	time "time"
 
-	versioned "github.com/c193083728/sco-operator/pkg/client/sco/clientset/versioned"
+	versioned "github.com/sco1237896/sco-operator/pkg/client/sco/clientset/versioned"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 	cache "k8s.io/client-go/tools/cache"

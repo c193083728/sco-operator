@@ -7,5 +7,5 @@ const (
 	RetryInterval    = 10 * time.Second
 	ConflictInterval = 1 * time.Second
 
-	FinalizerName = "c193083728.github.comfinalizer"
+	FinalizerName = "sco1237896.github.com/finalizer"
 )

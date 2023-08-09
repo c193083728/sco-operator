@@ -18,9 +18,9 @@ limitations under the License.
 package fake
 
 import (
-	clientset "github.com/c193083728/sco-operator/pkg/client/sco/clientset/versioned"
-	scov1alpha1 "github.com/c193083728/sco-operator/pkg/client/sco/clientset/versioned/typed/sco/v1alpha1"
-	fakescov1alpha1 "github.com/c193083728/sco-operator/pkg/client/sco/clientset/versioned/typed/sco/v1alpha1/fake"
+	clientset "github.com/sco1237896/sco-operator/pkg/client/sco/clientset/versioned"
+	scov1alpha1 "github.com/sco1237896/sco-operator/pkg/client/sco/clientset/versioned/typed/sco/v1alpha1"
+	fakescov1alpha1 "github.com/sco1237896/sco-operator/pkg/client/sco/clientset/versioned/typed/sco/v1alpha1/fake"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/watch"
 	"k8s.io/client-go/discovery"

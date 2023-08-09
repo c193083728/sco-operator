@@ -6,7 +6,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/c193083728/sco-operator/pkg/logger"
+	"github.com/sco1237896/sco-operator/pkg/logger"
 
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 
