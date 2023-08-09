@@ -23,8 +23,8 @@ import (
 	"github.com/spf13/cobra"
 	"k8s.io/klog/v2"
 
-	"github.com/c193083728/sco-operator/cmd/run"
-	"github.com/c193083728/sco-operator/pkg/logger"
+	"github.com/sco1237896/sco-operator/cmd/run"
+	"github.com/sco1237896/sco-operator/pkg/logger"
 )
 
 func main() {

@@ -19,8 +19,10 @@ package sco
 import (
 	"context"
 
-	client "github.com/c193083728/sco-operator/pkg/controller/client"
+	"github.com/sco1237896/sco-operator/pkg/controller"
+
 	"github.com/go-logr/logr"
+	client "github.com/sco1237896/sco-operator/pkg/controller/client"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 
@@ -28,7 +30,7 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
-	wsApi "github.com/c193083728/sco-operator/api/sco/v1alpha1"
+	wsApi "github.com/sco1237896/sco-operator/api/sco/v1alpha1"
 )
 
 func NewKWorkspaceReconciler(manager ctrl.Manager) (*WorkspaceReconciler, error) {
@@ -41,17 +43,17 @@ func NewKWorkspaceReconciler(manager ctrl.Manager) (*WorkspaceReconciler, error)
 	rec.l = ctrl.Log.WithName("controller")
 	rec.Client = c
 	rec.Scheme = manager.GetScheme()
-	rec.ClusterType = ClusterTypeVanilla
+	rec.ClusterType = controller.ClusterTypeVanilla
 
 	isOpenshift, err := c.IsOpenShift()
 	if err != nil {
 		return nil, err
 	}
 	if isOpenshift {
-		rec.ClusterType = ClusterTypeOpenShift
+		rec.ClusterType = controller.ClusterTypeOpenShift
 	}
 
-	rec.actions = make([]Action, 0)
+	rec.actions = make([]controller.Action[wsApi.Workspace], 0)
 
 	return &rec, nil
 }
@@ -60,14 +62,14 @@ type WorkspaceReconciler struct {
 	*client.Client
 
 	Scheme      *runtime.Scheme
-	ClusterType ClusterType
-	actions     []Action
+	ClusterType controller.ClusterType
+	actions     []controller.Action[wsApi.Workspace]
 	l           logr.Logger
 }
 
-// +kubebuilder:rbac:groups=sco.c193083728.github.com,resources=workspaces,verbs=get;list;watch;create;update;patch;delete
-// +kubebuilder:rbac:groups=sco.c193083728.github.com,resources=workspaces/status,verbs=get;update;patch
-// +kubebuilder:rbac:groups=sco.c193083728.github.com,resources=workspaces/finalizers,verbs=update
+// +kubebuilder:rbac:groups=sco.sco1237896.github.com,resources=workspaces,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups=sco.sco1237896.github.com,resources=workspaces/status,verbs=get;update;patch
+// +kubebuilder:rbac:groups=sco.sco1237896.github.com,resources=workspaces/finalizers,verbs=update
 // +kubebuilder:rbac:groups=camel.apache.org,resources=kameletbindings,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=camel.apache.org,resources=kamelets,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=camel.apache.org,resources=integrations,verbs=get;list;watch;create;update;patch;delete

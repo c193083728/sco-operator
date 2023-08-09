@@ -18,7 +18,7 @@ limitations under the License.
 package v1alpha1
 
 import (
-	internalinterfaces "github.com/c193083728/sco-operator/pkg/client/sco/informers/externalversions/internalinterfaces"
+	internalinterfaces "github.com/sco1237896/sco-operator/pkg/client/sco/informers/externalversions/internalinterfaces"
 )
 
 // Interface provides access to all the informers in this group version.

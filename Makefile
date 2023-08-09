@@ -1,7 +1,7 @@
 
 # Image URL to use all building/pushing image targets
-IMAGE_TAG_BASE ?= quay.io/c193083728/sco-operator
-IMG_VERSION ?= latest
+IMAGE_TAG_BASE ?= quay.io/sco1237896/sco-operator
+IMG_VERSION ?= latest 
 IMG ?= ${IMAGE_TAG_BASE}:${IMG_VERSION}
 
 LINT_GOGC := 10

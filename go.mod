@@ -1,4 +1,4 @@
-module github.com/c193083728/sco-operator
+module github.com/sco1237896/sco-operator
 
 go 1.21
 

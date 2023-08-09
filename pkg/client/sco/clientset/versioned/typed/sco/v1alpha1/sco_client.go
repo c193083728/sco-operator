@@ -20,8 +20,8 @@ package v1alpha1
 import (
 	"net/http"
 
-	v1alpha1 "github.com/c193083728/sco-operator/api/sco/v1alpha1"
-	"github.com/c193083728/sco-operator/pkg/client/sco/clientset/versioned/scheme"
+	v1alpha1 "github.com/sco1237896/sco-operator/api/sco/v1alpha1"
+	"github.com/sco1237896/sco-operator/pkg/client/sco/clientset/versioned/scheme"
 	rest "k8s.io/client-go/rest"
 )
 

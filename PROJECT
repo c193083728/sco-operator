@@ -2,20 +2,20 @@
 # This file is used to track the info used to scaffold your project
 # and allow the plugins properly work.
 # More info: https://book.kubebuilder.io/reference/project-config.html
-domain: c193083728.github.com
+domain: sco1237896.github.com
 layout:
 - go.kubebuilder.io/v4
 multigroup: true
 projectName: sco-operator
-repo: github.com/c193083728/sco-operator
+repo: github.com/sco1237896/sco-operator
 resources:
 - api:
     crdVersion: v1
     namespaced: true
   controller: true
-  domain: c193083728.github.com
+  domain: sco1237896.github.com
   group: sco
   kind: Workspace
-  path: github.com/c193083728/sco-operator/api/sco/v1alpha1
+  path: github.com/sco1237896/sco-operator/api/sco/v1alpha1
   version: v1alpha1
 version: "3"

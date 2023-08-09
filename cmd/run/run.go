@@ -1,13 +1,13 @@
 package run
 
 import (
-	"github.com/c193083728/sco-operator/pkg/controller"
+	"github.com/sco1237896/sco-operator/pkg/controller"
 	"github.com/spf13/cobra"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 
-	wsApi "github.com/c193083728/sco-operator/api/sco/v1alpha1"
-	wsCtl "github.com/c193083728/sco-operator/internal/controller/sco"
 	routev1 "github.com/openshift/api/route/v1"
+	wsApi "github.com/sco1237896/sco-operator/api/sco/v1alpha1"
+	wsCtl "github.com/sco1237896/sco-operator/internal/controller/sco"
 
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 )
@@ -23,7 +23,7 @@ func NewRunCmd() *cobra.Command {
 		MetricsAddr:                   ":8080",
 		ProbeAddr:                     ":8081",
 		PprofAddr:                     "",
-		LeaderElectionID:              "c193083728.github.com",
+		LeaderElectionID:              "sco1237896.github.com",
 		EnableLeaderElection:          true,
 		ReleaseLeaderElectionOnCancel: true,
 		LeaderElectionNamespace:       "",

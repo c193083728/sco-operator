@@ -1,4 +1,4 @@
-apiVersion: sco.c193083728.github.com/v1alpha1
+apiVersion: sco.sco1237896.github.com/v1alpha1
 kind: Workspace
 metadata:
   labels:

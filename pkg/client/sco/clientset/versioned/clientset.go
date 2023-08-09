@@ -21,7 +21,7 @@ import (
 	"fmt"
 	"net/http"
 
-	scov1alpha1 "github.com/c193083728/sco-operator/pkg/client/sco/clientset/versioned/typed/sco/v1alpha1"
+	scov1alpha1 "github.com/sco1237896/sco-operator/pkg/client/sco/clientset/versioned/typed/sco/v1alpha1"
 	discovery "k8s.io/client-go/discovery"
 	rest "k8s.io/client-go/rest"
 	flowcontrol "k8s.io/client-go/util/flowcontrol"

@@ -22,9 +22,9 @@ import (
 	sync "sync"
 	time "time"
 
-	versioned "github.com/c193083728/sco-operator/pkg/client/sco/clientset/versioned"
-	internalinterfaces "github.com/c193083728/sco-operator/pkg/client/sco/informers/externalversions/internalinterfaces"
-	sco "github.com/c193083728/sco-operator/pkg/client/sco/informers/externalversions/sco"
+	versioned "github.com/sco1237896/sco-operator/pkg/client/sco/clientset/versioned"
+	internalinterfaces "github.com/sco1237896/sco-operator/pkg/client/sco/informers/externalversions/internalinterfaces"
+	sco "github.com/sco1237896/sco-operator/pkg/client/sco/informers/externalversions/sco"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 	schema "k8s.io/apimachinery/pkg/runtime/schema"
