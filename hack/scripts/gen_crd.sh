@@ -7,6 +7,6 @@ fi
 PROJECT_ROOT="$1"
 
 "${PROJECT_ROOT}"/bin/controller-gen \
-  rbac:roleName=sco-operator \
+  rbac:roleName=sco-operator-role \
   crd \
   paths="./..." output:crd:artifacts:config="${PROJECT_ROOT}/config/crd/bases"
