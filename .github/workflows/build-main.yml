@@ -13,18 +13,22 @@ concurrency:
 jobs:
   build:
     uses: ./.github/workflows/build.yml
-  e2e:
-    uses: ./.github/workflows/e2e.yml
+  e2e-operator:
+    uses: ./.github/workflows/e2e-operator.yml
+    needs:
+      - build
+  e2e-olm:
+    uses: ./.github/workflows/e2e-olm.yml
     needs:
       - build
   publish:
     needs:
-      - e2e
+      - e2e-olm
+      - e2e-operator
     uses: ./.github/workflows/publish.yml
     with:
       version: "${{ github.ref_name }}-${{ github.sha }}"
       olm: false
-      tag: main
     secrets:
       registry: "quay.io"
       registry-username: ${{ secrets.QUAY_USERNAME }}

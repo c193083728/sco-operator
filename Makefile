@@ -1,27 +1,43 @@
 
-# Image URL to use all building/pushing image targets
-IMAGE_TAG_BASE ?= quay.io/sco1237896/sco-operator
-IMG_VERSION ?= latest 
-IMG ?= ${IMAGE_TAG_BASE}:${IMG_VERSION}
+PROJECT_NAME ?= sco-operator
+PROJECT_VERSION ?= 0.0.1
 
-LINT_GOGC := 10
-LINT_DEADLINE := 10m
+CONTAINER_REGISTRY ?= quay.io
+CONTAINER_REGISTRY_ORG ?= sco1237896
+CONTAINER_IMAGE_VERSION ?= $(PROJECT_VERSION)
+CONTAINER_IMAGE ?= $(CONTAINER_REGISTRY)/$(CONTAINER_REGISTRY_ORG)/$(PROJECT_NAME):$(CONTAINER_IMAGE_VERSION)
+
+BUNDLE_VERSION ?= $(PROJECT_VERSION)
+BUNDLE_CONTAINER_IMAGE ?= $(CONTAINER_REGISTRY)/$(CONTAINER_REGISTRY_ORG)/$(PROJECT_NAME)-bundle:$(BUNDLE_VERSION)
+
+CATALOG_VERSION ?= latest
+CATALOG_CONTAINER_IMAGE ?= $(CONTAINER_REGISTRY)/$(CONTAINER_REGISTRY_ORG)/$(PROJECT_NAME)-catalog:$(CATALOG_VERSION)
+
+LINT_GOGC ?= 10
+LINT_DEADLINE ?= 10m
 
 MKFILE_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
 PROJECT_PATH := $(patsubst %/,%,$(dir $(MKFILE_PATH)))
-LOCALBIN ?= ${PROJECT_PATH}/bin
+LOCALBIN := $(PROJECT_PATH)/bin
+
+## Tool Versions
+CODEGEN_VERSION ?= v0.27.4
+KUSTOMIZE_VERSION ?= v5.0.1
+CONTROLLER_TOOLS_VERSION ?= v0.12.1
+KIND_VERSION ?= v0.20.0
+LINTER_VERSION ?= v1.52.2
+OPERATOR_SDK_VERSION ?= v1.31.0
+OPM_VERSION ?= v1.28.0
 
 ## Tool Binaries
 KUBECTL ?= kubectl
 KUSTOMIZE ?= $(LOCALBIN)/kustomize
-GL ?= $(LOCALBIN)/golangci-lint
+LINTER ?= $(LOCALBIN)/golangci-lint
 GOIMPORT ?= $(LOCALBIN)/goimports
 YQ ?= $(LOCALBIN)/yq
-
-## Tool Versions
-KUSTOMIZE_VERSION ?= v5.0.1
-CONTROLLER_TOOLS_VERSION ?= v0.12.0
-CODEGEN_VERSION := v0.27.4
+KIND ?= $(LOCALBIN)/kind
+OPERATOR_SDK ?= $(LOCALBIN)/operator-sdk
+OPM ?= $(LOCALBIN)/opm
 
 # Get the currently used golang install path (in GOPATH/bin, unless GOBIN is set)
 ifeq (,$(shell go env GOBIN))
@@ -44,6 +60,11 @@ SHELL = /usr/bin/env bash -o pipefail
 .PHONY: all
 all: build
 
+
+ifndef ignore-not-found
+  ignore-not-found = false
+endif
+
 ##@ General
 
 # The help target prints out all targets with their descriptions organized
@@ -59,7 +80,7 @@ all: build
 
 .PHONY: help
 help: ## Display this help.
-	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} /^[a-zA-Z_0-9-]+:.*?##/ { printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
+	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} /^[a-zA-Z_0-9-\/]+:.*?##/ { printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
 
 ##@ Development
 
@@ -73,7 +94,7 @@ generate: codegen-tools-install ## Generate code containing DeepCopy, DeepCopyIn
 	$(PROJECT_PATH)/hack/scripts/gen_client.sh $(PROJECT_PATH)
 
 .PHONY: fmt
-fmt: goimport ## Run go fmt against code.
+fmt: goimport ## Run go fmt, gomiport against code.
 	$(GOIMPORT) -l -w .
 	go fmt ./...
 
@@ -83,11 +104,15 @@ vet: ## Run go vet against code.
 
 .PHONY: test
 test: manifests generate fmt vet ## Run tests.
-	go test ./pkg/... ./internal/controller/...
+	go test -ldflags="$(GOLDFLAGS)" -v ./pkg/... ./internal/...
 
-.PHONY: test/e2e
-test/e2e: manifests generate fmt vet ## Run e2e tests.
-	go test -v ./test/e2e/...
+.PHONY: test/e2e/operator
+test/e2e/operator: manifests generate fmt vet ## Run e2e operator tests.
+	go test -ldflags="$(GOLDFLAGS)" -v ./test/e2e/operator/...
+
+.PHONY: test/e2e/olm
+test/e2e/olm: ## Run e2e catalog tests.
+	go test -ldflags="$(GOLDFLAGS)" -v ./test/e2e/olm/...
 
 ##@ Build
 
@@ -96,18 +121,25 @@ build: manifests generate fmt vet ## Build manager binary.
 	go build -ldflags="$(GOLDFLAGS)" -o bin/sco cmd/main.go
 
 .PHONY: run
-run: manifests generate fmt vet ## Run a controller from your host.
+run: ## Run a controller from your host.
 	go run -ldflags="$(GOLDFLAGS)" cmd/main.go run --leader-election=false --zap-devel
 
 .PHONY: run/local
-run/local: manifests generate fmt vet install run
+run/local: install ## Install and Run a controller from your host.
+	go run -ldflags="$(GOLDFLAGS)" cmd/main.go run --leader-election=false --zap-devel
+
+
+.PHONY: deps
+deps:  ## Tidy up deps.
+	go mod tidy
+
 
 .PHONY: check/lint
 check: check/lint
 
 .PHONY: check/lint
 check/lint: golangci-lint
-	@$(GL) run \
+	@$(LINTER) run \
 		--config .golangci.yml \
 		--out-format tab \
 		--skip-dirs etc \
@@ -116,7 +148,7 @@ check/lint: golangci-lint
 
 .PHONY: check/lint/fix
 check/lint/fix: golangci-lint
-	@$(GL) run \
+	@$(LINTER) run \
 		--config .golangci.yml \
 		--out-format tab \
 		--skip-dirs etc \
@@ -125,17 +157,17 @@ check/lint/fix: golangci-lint
 
 .PHONY: docker/build
 docker/build: test ## Build docker image with the manager.
-	$(CONTAINER_TOOL) build -t ${IMG} .
+	$(CONTAINER_TOOL) build -t $(CONTAINER_IMAGE) .
 
 .PHONY: docker/push
 docker/push: ## Push docker image with the manager.
-	$(CONTAINER_TOOL) push ${IMG}
+	$(CONTAINER_TOOL) push $(CONTAINER_IMAGE)
+
+.PHONY: docker/push/kind
+docker/push/kind: docker/build ## Load docker image in kind.
+	kind load docker-image $(CONTAINER_IMAGE)
 
 ##@ Deployment
-
-ifndef ignore-not-found
-  ignore-not-found = false
-endif
 
 .PHONY: install
 install: manifests kustomize ## Install CRDs into the K8s cluster specified in ~/.kube/config.
@@ -147,19 +179,66 @@ uninstall: manifests kustomize ## Uninstall CRDs from the K8s cluster specified 
 
 .PHONY: deploy
 deploy: manifests kustomize ## Deploy controller to the K8s cluster specified in ~/.kube/config.
-	cd config/manager && $(KUSTOMIZE) edit set image controller=${IMG}
-	$(KUSTOMIZE) build config/standalone | $(KUBECTL) apply -f -
+	cd config/manager && $(KUSTOMIZE) edit set image controller=$(CONTAINER_IMAGE)
+	$(KUSTOMIZE) build config/deploy/standalone | kubectl apply -f -
 
 .PHONY: undeploy
 undeploy: ## Undeploy controller from the K8s cluster specified in ~/.kube/config. Call with ignore-not-found=true to ignore resource not found errors during deletion.
-	$(KUSTOMIZE) build config/standalone | $(KUBECTL) delete --ignore-not-found=$(ignore-not-found) -f -
+	$(KUSTOMIZE) build config/deploy/standalone | $(KUBECTL) delete --ignore-not-found=$(ignore-not-found) -f -
+
 
 .PHONY: deploy/e2e
 deploy/e2e: manifests kustomize ## Deploy controller to the K8s cluster specified in ~/.kube/config.
-	cd config/manager && $(KUSTOMIZE) edit set image controller=${IMG}
-	$(KUSTOMIZE) build config/e2e | kubectl apply -f -
+	cd config/manager && $(KUSTOMIZE) edit set image controller=$(CONTAINER_IMAGE)
+	$(KUSTOMIZE) build config/deploy/e2e | kubectl apply -f -
+.PHONY: deploy/kind
+deploy/kind: manifests kustomize kind ## Deploy controller to the K8s cluster specified in ~/.kube/config.
+	cd config/manager && $(KUSTOMIZE) edit set image controller=$(CONTAINER_IMAGE)
+	kind load docker-image $(CONTAINER_IMAGE)
+	$(KUSTOMIZE) build config/deploy/standalone | kubectl apply -f -
 
 
+##@ Bundles
+
+.PHONY: bundle/info
+bundle/info: ## Dump bundle info.
+	@echo $(CONTAINER_IMAGE)
+	@echo $(BUNDLE_CONTAINER_IMAGE)
+
+.PHONY: bundle/generate_
+bundle/generate: generate manifests kustomize operator-sdk yq ## Generate bundle.
+	cd config/manager && $(KUSTOMIZE) edit set image controller=$(CONTAINER_IMAGE)
+	$(PROJECT_PATH)/hack/scripts/gen_bundle.sh \
+		$(PROJECT_PATH) \
+		$(PROJECT_NAME) \
+		$(BUNDLE_VERSION)
+
+.PHONY: bundle/build
+bundle/build: ## Build bundle image.
+	$(CONTAINER_TOOL) build \
+		-t $(BUNDLE_CONTAINER_IMAGE) \
+		-f $(PROJECT_PATH)/bundle/bundle.Dockerfile \
+		$(PROJECT_PATH)/bundle
+
+.PHONY: bundle/push
+bundle/push: ## Push bundle image.
+	$(CONTAINER_TOOL) push $(BUNDLE_CONTAINER_IMAGE)
+
+.PHONY: catalog/build
+catalog/build: opm ## Build catalog image.
+	$(OPM) index add \
+		--container-tool $(CONTAINER_TOOL) \
+		--mode semver \
+		--tag $(CATALOG_CONTAINER_IMAGE) \
+		--bundles $(BUNDLE_CONTAINER_IMAGE)
+
+.PHONY: catalog/push
+catalog/push: ## Push catalog image.
+	$(CONTAINER_TOOL) push $(CATALOG_CONTAINER_IMAGE)
+
+.PHONY: olm/install
+olm/install: operator-sdk ## Install olm.
+	cd bin && $(OPERATOR_SDK) olm install
 
 ##@ Build Dependencies
 
@@ -167,39 +246,33 @@ deploy/e2e: manifests kustomize ## Deploy controller to the K8s cluster specifie
 $(LOCALBIN):
 	mkdir -p $(LOCALBIN)
 
+## Tool Binaries
+KUBECTL ?= kubectl
+KUSTOMIZE ?= $(LOCALBIN)/kustomize
+CONTROLLER_GEN ?= $(LOCALBIN)/controller-gen
+
+## Tool Versions
+KUSTOMIZE_VERSION ?= v5.0.1
+CONTROLLER_TOOLS_VERSION ?= v0.12.0
 
 .PHONY: kustomize
 kustomize: $(KUSTOMIZE) ## Download kustomize locally if necessary. If wrong version is installed, it will be removed before downloading.
 $(KUSTOMIZE): $(LOCALBIN)
-	@if test -x $(LOCALBIN)/kustomize && ! $(LOCALBIN)/kustomize version | grep -q $(KUSTOMIZE_VERSION); then \
-		echo "$(LOCALBIN)/kustomize version is not expected $(KUSTOMIZE_VERSION). Removing it before installing."; \
-		rm -rf $(LOCALBIN)/kustomize; \
-	fi
-	test -s $(LOCALBIN)/kustomize || GOBIN=$(LOCALBIN) GO111MODULE=on go install sigs.k8s.io/kustomize/kustomize/v5@$(KUSTOMIZE_VERSION)
+	test -s $(LOCALBIN)/kustomize || \
+	GOBIN=$(LOCALBIN) GO111MODULE=on go install sigs.k8s.io/kustomize/kustomize/v5@$(KUSTOMIZE_VERSION)
 
+.PHONY: controller-gen
+controller-gen: $(CONTROLLER_GEN) ## Download controller-gen locally if necessary. If wrong version is installed, it will be overwritten.
+$(CONTROLLER_GEN): $(LOCALBIN)
+	test -s $(LOCALBIN)/controller-gen || \
+	GOBIN=$(LOCALBIN) go install sigs.k8s.io/controller-tools/cmd/controller-gen@$(CONTROLLER_TOOLS_VERSION)
 
-.PHONY: operator-sdk
-OPERATOR_SDK ?= $(LOCALBIN)/operator-sdk
-operator-sdk: ## Download operator-sdk locally if necessary.
-ifeq (,$(wildcard $(OPERATOR_SDK)))
-ifeq (, $(shell which operator-sdk 2>/dev/null))
-	@{ \
-	set -e ;\
-	mkdir -p $(dir $(OPERATOR_SDK)) ;\
-	OS=$(shell go env GOOS) && ARCH=$(shell go env GOARCH) && \
-	curl -sSLo $(OPERATOR_SDK) https://github.com/operator-framework/operator-sdk/releases/download/$(OPERATOR_SDK_VERSION)/operator-sdk_$${OS}_$${ARCH} ;\
-	chmod +x $(OPERATOR_SDK) ;\
-	}
-else
-OPERATOR_SDK = $(shell which operator-sdk)
-endif
-endif
 
 .PHONY: golangci-lint
-golangci-lint: $(GL)
-$(GL): $(LOCALBIN)
+golangci-lint: $(LINTER)
+$(LINTER): $(LOCALBIN)
 	@test -s $(LOCALBIN)/golangci-lint || \
-	GOBIN=$(LOCALBIN) go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.52.2
+	GOBIN=$(LOCALBIN) go install github.com/golangci/golangci-lint/cmd/golangci-lint@$(LINTER_VERSION)
 
 .PHONY: goimport
 goimport: $(GOIMPORT)
@@ -207,17 +280,31 @@ $(GOIMPORT): $(LOCALBIN)
 	@test -s $(LOCALBIN)/goimport || \
 	GOBIN=$(LOCALBIN) go install golang.org/x/tools/cmd/goimports@latest
 
-
 .PHONY: yq
 yq: $(YQ)
 $(YQ): $(LOCALBIN)
 	@test -s $(LOCALBIN)/yq || \
 	GOBIN=$(LOCALBIN) go install github.com/mikefarah/yq/v4@latest
 
+
+.PHONY: kind
+kind: $(KIND)
+$(KIND): $(LOCALBIN)
+	@test -s $(LOCALBIN)/kind || \
+	GOBIN=$(LOCALBIN) go install sigs.k8s.io/kind@$(KIND_VERSION)
+
+
 .PHONY: codegen-tools-install
 codegen-tools-install: $(LOCALBIN)
-	@# We must force the installation to make sure we are using the correct version
-	@# Note: as there is no --version in the tools, we cannot rely on cached local versions
-	@echo "Installing code gen tools"
-
 	$(PROJECT_PATH)/hack/scripts/install_gen_tools.sh $(PROJECT_PATH) $(CODEGEN_VERSION) $(CONTROLLER_TOOLS_VERSION)
+
+.PHONY: operator-sdk
+operator-sdk: $(OPERATOR_SDK)
+$(OPERATOR_SDK): $(LOCALBIN)
+	$(PROJECT_PATH)/hack/scripts/install_operator_sdk.sh $(PROJECT_PATH) $(OPERATOR_SDK_VERSION)
+
+
+.PHONY: opm
+opm: $(OPM)
+$(OPM): $(LOCALBIN)
+	$(PROJECT_PATH)/hack/scripts/install_opm.sh $(PROJECT_PATH) $(OPM_VERSION)

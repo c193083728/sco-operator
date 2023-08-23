@@ -10,9 +10,6 @@ on:
       olm:
         required: true
         type: boolean
-      tag:
-        required: true
-        type: string
     secrets:
       registry:
         required: true
@@ -36,23 +33,27 @@ jobs:
         with:
           registry: ${{ secrets.registry }}
           username: ${{ secrets.registry-username }}
-          password: ${{ secrets.registry-password }}      
+          password: ${{ secrets.registry-password }}
       - name: Set versions
         run: |
           export INPUT_VERSION="${{ inputs.version }}"
           export C_VERSION="${INPUT_VERSION#v}"
 
-          echo "VERSION=${C_VERSION}" >> $GITHUB_ENV
-          echo "IMG_VERSION=${C_VERSION}" >> $GITHUB_ENV
-      - name: "Build Container image"
+          echo "CONTAINER_IMAGE_VERSION=${C_VERSION}" >> $GITHUB_ENV
+          echo "BUNDLE_VERSION=${C_VERSION}" >> $GITHUB_ENV
+          echo "CATALOG_VERSION=latest" >> $GITHUB_ENV
+      - name: "Build Operator Container image"
         run: |
           make docker/build
           make docker/push
-      - name: "Build OLM bundle"
+      - name: "Build Operator OLM bundle"
         if: ${{ inputs.olm }}
         run: |
-          make bundle
+          make bundle/generate
           make bundle/build
           make bundle/push
+      - name: "Build Operator OLM Catalog"
+        if: ${{ inputs.olm }}
+        run: |
           make catalog/build
           make catalog/push

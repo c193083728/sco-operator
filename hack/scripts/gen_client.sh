@@ -37,7 +37,16 @@ mkdir -p "${PROJECT_ROOT}/pkg/client/sco"
   --input-dirs=github.com/sco1237896/sco-operator/api/sco/v1alpha1 \
   --versioned-clientset-package=github.com/sco1237896/sco-operator/pkg/client/sco/clientset/versioned \
   --listers-package=github.com/sco1237896/sco-operator/pkg/client/sco/listers \
-  --output-package=github.com/sco1237896/sco-operator/pkg/client/sco/informers
 
+# This should not be needed but for some reasons, the applyconfiguration-gen tool
+# sets a wrong APIVersion
+#
+# See: https://github.com/kubernetes/code-generator/issues/150
+sed -i \
+  's/WithAPIVersion(\"sco\/v1alpha1\")/WithAPIVersion(\"sco.sco1237896.github.com\/v1alpha1\")/g' \
+  "${TMP_DIR}"/client/github.com/sco1237896/sco-operator/pkg/client/sco/applyconfiguration/sco/v1alpha1/workspace.go
 
-cp -R "${TMP_DIR}"/client/github.com/sco1237896/sco-operator/pkg/client/sco/* "${PROJECT_ROOT}"/pkg/client/sco
+cp -r \
+  "${TMP_DIR}"/client/github.com/sco1237896/sco-operator/pkg/client/sco/* \
+  "${PROJECT_ROOT}"/pkg/client/sco
+

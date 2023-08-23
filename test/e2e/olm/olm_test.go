@@ -1,4 +1,4 @@
-package e2e
+package operator
 
 import (
 	"testing"
@@ -6,7 +6,7 @@ import (
 	. "github.com/sco1237896/sco-operator/test/support"
 )
 
-func TestDesignerDeploy(t *testing.T) {
+func TestOlmDeploy(t *testing.T) {
 	test := With(t)
 	test.T().Parallel()
 

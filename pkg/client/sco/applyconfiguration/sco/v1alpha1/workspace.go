@@ -40,7 +40,7 @@ func Workspace(name, namespace string) *WorkspaceApplyConfiguration {
 	b.WithName(name)
 	b.WithNamespace(namespace)
 	b.WithKind("Workspace")
-	b.WithAPIVersion("sco/v1alpha1")
+	b.WithAPIVersion("sco.sco1237896.github.com/v1alpha1")
 	return b
 }
 
