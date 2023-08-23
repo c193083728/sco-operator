@@ -62,7 +62,7 @@ jobs:
             --namespace=sco-system \
             --for=condition=ready \
             pod \
-            --selector=control-plane=controller-manager \
+            --selector=control-plane=sco-operator \
             --timeout=90s
       - name: "Run Operator e2e"
         run: |
