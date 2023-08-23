@@ -2,18 +2,17 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   labels:
-    app.kubernetes.io/name: clusterrolebinding
-    app.kubernetes.io/instance: manager-rolebinding
+    app.kubernetes.io/name: cluster-role-binding
+    app.kubernetes.io/instance: sco-operator-leader-election-cluster-role-binding
     app.kubernetes.io/component: rbac
-    app.kubernetes.io/created-by: sco-operator
     app.kubernetes.io/part-of: sco-operator
     app.kubernetes.io/managed-by: kustomize
-  name: sco-operator-role-binding
+  name: sco-operator-leader-election-cluster-role-binding
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
   name: sco-operator-role
 subjects:
 - kind: ServiceAccount
-  name: sco-operator
+  name: sco-operator-service-account
   namespace: sco-system

@@ -4,12 +4,12 @@ kind: Role
 metadata:
   labels:
     app.kubernetes.io/name: role
-    app.kubernetes.io/instance: leader-election-role
+    app.kubernetes.io/instance: sco-operator-leader-election-role
     app.kubernetes.io/component: rbac
-    app.kubernetes.io/created-by: sco-operator
     app.kubernetes.io/part-of: sco-operator
     app.kubernetes.io/managed-by: kustomize
-  name: sco-leader-election-role
+  name: sco-operator-leader-election-role
+  namespace: sco-system
 rules:
 - apiGroups:
   - ""

@@ -3,17 +3,17 @@ kind: RoleBinding
 metadata:
   labels:
     app.kubernetes.io/name: role-binding
-    app.kubernetes.io/instance: leader-election-role-binding
+    app.kubernetes.io/instance: sco-operator-leader-election-role-binding
     app.kubernetes.io/component: rbac
-    app.kubernetes.io/created-by: sco-operator
     app.kubernetes.io/part-of: sco-operator
     app.kubernetes.io/managed-by: kustomize
-  name: sco-leader-election-role-binding
+  name: sco-operator-leader-election-role-binding
+  namespace: sco-system
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: sco-leader-election-role
+  name: sco-operator-leader-election-role
 subjects:
 - kind: ServiceAccount
-  name: sco-operator
+  name: sco-operator-service-account
   namespace: sco-system
