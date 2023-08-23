@@ -10,7 +10,7 @@ require (
 	github.com/openshift/client-go v0.0.0-20230807132528-be5346fb33cb
 	github.com/rs/xid v1.5.0
 	github.com/spf13/cobra v1.6.0
-	github.com/stretchr/testify v1.8.1
+	github.com/stretchr/testify v1.8.4
 	k8s.io/api v0.27.2
 	k8s.io/apimachinery v0.27.2
 	k8s.io/client-go v0.27.2
