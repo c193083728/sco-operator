@@ -1,0 +1,53 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: ClusterServiceVersion
+metadata:
+  annotations:
+    alm-examples: "[]"
+    capabilities: Basic Install
+    categories: "camel,integration"
+    certified: "false"
+    containerImage: ""
+  name: sco-operator.v0.0.0
+  namespace: placeholder
+spec:
+  apiservicedefinitions: {}
+  customresourcedefinitions:
+    owned:
+      - description: Workspace is the Schema for the SCO Workspace API.
+        displayName: Workspace
+        kind: Workspace
+        name: workspaces.sco.sco1237896.github.com
+        version: v1alpha1
+  description: SCO Operator
+  displayName: SCO Operator
+  icon:
+    - base64data: ""
+      mediatype: "image/svg+xml"
+  install:
+    spec:
+      deployments: null
+    strategy: ""
+  installModes:
+    - supported: false
+      type: OwnNamespace
+    - supported: false
+      type: SingleNamespace
+    - supported: false
+      type: MultiNamespace
+    - supported: true
+      type: AllNamespaces
+  keywords:
+    - camel
+    - integration
+  links:
+    - name: sco-operator
+      url: https://github.com/sco1237896/sco-operator
+  maintainers:
+    - email: "lburgazzoli@gmail.com"
+      name: "Luca Burgazzoli"
+  maturity: alpha
+  minKubeVersion: 1.22.0
+  provider:
+    name: redhat.com
+    url: https://redhat.com
+  version: 0.0.0

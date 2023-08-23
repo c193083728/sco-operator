@@ -1,4 +1,4 @@
-name: Build And Push
+name: "e2e - operator"
 
 on:
   workflow_call:
@@ -18,23 +18,24 @@ jobs:
       - name: "Publish Image"
         id: "publish"
         run: |
-          export UUID=$(uuidgen)
-          export IMG="ttl.sh/${UUID}-${GITHUB_RUN_ID}-${GITHUB_RUN_NUMBER}:1h"
+          export UUID=$(uuidgen | tr "[:upper:]" "[:lower:]")
+          export CONTAINER_IMAGE="ttl.sh/${UUID}-${GITHUB_RUN_ID}-${GITHUB_RUN_NUMBER}:1h"
           
-          echo $IMG
-          echo "image=${IMG}" >> "$GITHUB_OUTPUT"
+          echo CONTAINER_IMAGE
+          echo "image=${CONTAINER_IMAGE}" >> "$GITHUB_OUTPUT"
           
-          make docker-build docker-push
-  e2e:
+          make docker/build docker/push
+  e2e-operator:
     runs-on: ubuntu-latest
     needs:
       - images
     env:
-      IMG: ${{needs.images.outputs.image}}
+      CONTAINER_IMAGE: ${{needs.images.outputs.image}}
     strategy:
       matrix:
         kubernetes-version:
           - "1.27.3"
+          - "1.28.0"
     steps:
       - name: "Checkout"
         uses: actions/checkout@v3
@@ -52,15 +53,8 @@ jobs:
           config: test/e2e/kind.yaml
       - name: 'SetUp Kind Ingress'
         run: |
-          kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
-
-          kubectl wait \
-            --namespace=ingress-nginx \
-            --for=condition=ready \
-            pod \
-            --selector=app.kubernetes.io/component=controller \
-            --timeout=90s
-      - name: "SetUp SCO Operator"
+          ./hack/scripts/deploy_ingress.sh
+      - name: "SetUp Operator"
         run: |          
           make deploy/e2e
           
@@ -68,8 +62,8 @@ jobs:
             --namespace=sco-system \
             --for=condition=ready \
             pod \
-            --selector=control-plane=sco-operator \
+            --selector=control-plane=controller-manager \
             --timeout=90s
-      - name: "Run e2e"
+      - name: "Run Operator e2e"
         run: |
-          make test/e2e
+          make test/e2e/operator
