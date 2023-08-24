@@ -8,7 +8,7 @@ PROJECT_ROOT="$1"
 BUNDLE_NAME="$2"
 BUNDLE_VERSION="$3"
 
-rm -rf "${PROJECT_ROOT}/bundle/sco-operator"
+rm -rf "${PROJECT_ROOT}/bundle/${BUNDLE_NAME}"
 
 mkdir -p "${PROJECT_ROOT}/bundle"
 cd "${PROJECT_ROOT}/bundle" || exit
@@ -32,7 +32,7 @@ echo "Patch bundle metadata"
 
 ${PROJECT_ROOT}/bin/yq -i \
   '.metadata.annotations.containerImage = .spec.install.spec.deployments[0].spec.template.spec.containers[0].image' \
-   "${PROJECT_ROOT}/bundle/sco-operator/manifests/${BUNDLE_NAME}.clusterserviceversion.yaml"
+   "${PROJECT_ROOT}/bundle/${BUNDLE_NAME}/manifests/${BUNDLE_NAME}.clusterserviceversion.yaml"
 
 echo "Validate bundle"
 
