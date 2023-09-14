@@ -83,7 +83,6 @@ func (a *deployAction) deploy(ctx context.Context, rr *controller.Reconciliation
 				controller.KubernetesLabelAppName:      rr.Resource.Name,
 				controller.KubernetesLabelAppPartOf:    "sco-operator",
 				controller.KubernetesLabelAppManagedBy: "sco-operator",
-				controller.KubernetesLabelCreatedBy:    "sco-operator",
 			},
 		},
 	}

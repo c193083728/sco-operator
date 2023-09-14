@@ -29,7 +29,6 @@ const (
 	KubernetesLabelAppComponent = "app.kubernetes.io/component"
 	KubernetesLabelAppPartOf    = "app.kubernetes.io/part-of"
 	KubernetesLabelAppManagedBy = "app.kubernetes.io/managed-by"
-	KubernetesLabelCreatedBy    = "app.kubernetes.io/created-by"
 )
 
 type ReconciliationRequest[T any] struct {
