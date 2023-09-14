@@ -80,10 +80,10 @@ func (a *deployAction) deploy(ctx context.Context, rr *controller.Reconciliation
 				},
 			},
 			Labels: map[string]string{
-				"app.kubernetes.io/instance":   rr.Resource.Name,
-				"app.kubernetes.io/part-of":    "sco-operator",
-				"app.kubernetes.io/managed-by": "sco-operator",
-				"app.kubernetes.io/created-by": "sco-operator",
+				controller.KubernetesLabelAppName:      rr.Resource.Name,
+				controller.KubernetesLabelAppPartOf:    "sco-operator",
+				controller.KubernetesLabelAppManagedBy: "sco-operator",
+				controller.KubernetesLabelCreatedBy:    "sco-operator",
 			},
 		},
 	}
