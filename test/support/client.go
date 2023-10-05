@@ -5,8 +5,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/sco1237896/sco-operator/pkg/controller/client"
-
 	route "github.com/openshift/client-go/route/clientset/versioned"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/discovery"
@@ -16,6 +14,7 @@ import (
 	"k8s.io/client-go/util/homedir"
 
 	scoClient "github.com/sco1237896/sco-operator/pkg/client/sco/clientset/versioned"
+	"github.com/sco1237896/sco-operator/pkg/controller/client"
 )
 
 type Client struct {
