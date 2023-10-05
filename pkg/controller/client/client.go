@@ -1,6 +1,7 @@
 package client
 
 import (
+	camel "github.com/apache/camel-k/v2/pkg/client/camel/clientset/versioned"
 	route "github.com/openshift/client-go/route/clientset/versioned"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -19,6 +20,7 @@ var codecs = serializer.NewCodecFactory(scaleConverter.Scheme())
 type Client struct {
 	ctrl.Client
 	kubernetes.Interface
+	Camel camel.Interface
 
 	Discovery discovery.DiscoveryInterface
 	Route     route.Interface
@@ -42,10 +44,15 @@ func NewClient(cfg *rest.Config, scheme *runtime.Scheme, cc ctrl.Client) (*Clien
 	if err != nil {
 		return nil, err
 	}
+	camelClient, err := camel.NewForConfig(cfg)
+	if err != nil {
+		return nil, err
+	}
 
 	c := Client{
 		Client:    cc,
 		Interface: kubeClient,
+		Camel:     camelClient,
 		Discovery: discoveryClient,
 		scheme:    scheme,
 		config:    cfg,

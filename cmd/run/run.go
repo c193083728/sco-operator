@@ -1,12 +1,12 @@
 package run
 
 import (
-	camelv1 "github.com/apache/camel-k/pkg/apis/camel/v1"
+	camelv1 "github.com/apache/camel-k/v2/pkg/apis/camel/v1"
+
 	"github.com/sco1237896/sco-operator/pkg/controller"
 	"github.com/spf13/cobra"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 
-	routev1 "github.com/openshift/api/route/v1"
 	wsApi "github.com/sco1237896/sco-operator/api/sco/v1alpha1"
 	wsCtl "github.com/sco1237896/sco-operator/internal/controller/sco"
 
@@ -16,7 +16,7 @@ import (
 func init() {
 	utilruntime.Must(wsApi.AddToScheme(controller.Scheme))
 	utilruntime.Must(camelv1.AddToScheme(controller.Scheme))
-	utilruntime.Must(routev1.Install(controller.Scheme))
+	// utilruntime.Must(routev1.Install(controller.Scheme))
 }
 
 func NewRunCmd() *cobra.Command {
